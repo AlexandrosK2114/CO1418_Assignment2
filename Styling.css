@@ -1,0 +1,96 @@
+/*GENERAL STYLING*/
+*{
+    font-family: Arial, sans-serif;
+}
+
+main{
+	display:flex;
+	flex-direction:column;
+	justify-content:center;
+	align-items:center;
+}
+
+body{
+	margin:0;
+	padding:0;
+}
+
+/*HEADERS STYLING*/
+header{
+	display:flex;
+	flex-direction:row;
+	background-color:#BE1622;
+	align-items:center;
+	padding:5% 1%;
+}
+
+header > *{
+	color:white;
+}
+
+/*FOOTERS STYLING*/
+footer{
+	display:flex;
+	flex-direction:row;
+	justify-content:space-between;
+	background-color:#34516C;
+	padding:5% 1%;
+}
+
+footer > *{
+	color:white;
+}
+
+/*INDEX STYLING*/
+#indexMain{
+	display:flex;
+	flex-direction:column;
+	align-items:flex-start;
+	padding:2%;
+}
+
+#indexMain h2{
+	color:#34516C;
+}
+
+#indexMain h4{
+	color:#F2BE1A;
+}
+
+/*MEDIA QUERIES*/
+/*MINIMUM WIDTH 320PX*/
+@media only screen and (min-width:320px){
+	
+	/*HEADERS*/
+	header{
+		gap:2%;
+	}
+	
+	header img{
+		width:120px;
+		height:auto;
+	}
+	
+	header > *{
+		font-size:100%;
+	}
+	
+	/*FOOTERS*/
+	footer h2{
+		font-size:30%;
+	}
+	
+	footer p{
+		font-size:50%;
+	}
+}
+
+/*MINIMUM WIDTH 450PX*/
+
+/*MINIMUM WIDTH 768PX*/
+
+/*MINIMUM WIDTH 1024PX*/
+
+/*MINIMUM WIDTH 1440PX*/
+
+/*MINIMUM WIDTH 2560*/
