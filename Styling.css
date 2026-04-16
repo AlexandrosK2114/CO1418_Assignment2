@@ -1,4 +1,4 @@
-/*GENERAL STYLING*/
+/**********GENERAL STYLING**************/
 *{
     font-family: Arial, sans-serif;
 }
@@ -15,29 +15,56 @@ body{
 	padding:0;
 }
 
-/*HEADERS STYLING*/
+/************HEADERS STYLING**************/
 header{
 	display:flex;
-	flex-direction:row;
+	flex-direction:column;
 	background-color:#BE1622;
+}
+
+header div{
+	display:flex;
+	flex-direction:row;
 	align-items:center;
-	padding:5% 1%;
+	justify-content:space-between;
+	padding:3% 2%;
 }
 
 header > *{
 	color:white;
 }
 
-/*FOOTERS STYLING*/
+#regularLinks a{
+	color:white;
+	text-decoration:none;
+}
+
+#regularLinks a:hover{
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+
+#burgerLinks{
+	background-color:#C7CBDA;
+	padding:3% 2%;
+}
+
+#burgerLinks a{
+	margin-bottom:2%;
+	color:white;
+	text-decoration:none;
+}
+
+/*******FOOTERS STYLING*****/
 footer{
 	display:flex;
 	flex-direction:row;
-	justify-content:space-between;
+	justify-content:space-evenly;
 	background-color:#34516C;
-	padding:5% 1%;
+	padding:5% 2%;
+	gap:3%;
 }
 
-footer > *{
+footer > *, a{
 	color:white;
 }
 
@@ -46,7 +73,7 @@ footer > *{
 	display:flex;
 	flex-direction:column;
 	align-items:flex-start;
-	padding:2%;
+	padding:5%;
 }
 
 #indexMain h2{
@@ -57,40 +84,245 @@ footer > *{
 	color:#F2BE1A;
 }
 
+.offer{
+	margin-bottom:2%;
+	border-radius:20px;
+	padding:1%;
+	text-align:center;
+	background-color:#0000004A;
+}
+
+.offer p{
+	color:#FAFAFA;
+}
+
+/******PRODUCTS STYLING*****/
+#products{
+	display:grid;
+	grid-template-columns:auto auto auto;
+	grid-template-rows:auto auto auto;
+}
+
 /*MEDIA QUERIES*/
-/*MINIMUM WIDTH 320PX*/
-@media only screen and (min-width:320px){
+/*WIDTH 0-450PX*/
+@media only screen and (min-width:0px){
 	
 	/*HEADERS*/
-	header{
-		gap:2%;
+	header h1{
+		font-size:100%;
 	}
 	
-	header img{
-		width:120px;
+	#uclanLogo{
+		width:40%;
 		height:auto;
 	}
 	
-	header > *{
-		font-size:100%;
+	#regularLinks{
+		display:none;
+	}
+	
+	#burgerMenu{
+		width:40px;
+		height:auto;
+	}
+	
+	#burgerLinks{
+		display:none;
+	}
+
+	#burgerLinks.active{
+		display:flex;
+		flex-direction:column;
+		align-content:center;
 	}
 	
 	/*FOOTERS*/
 	footer h2{
-		font-size:30%;
+		font-size:70%;
 	}
 	
 	footer p{
 		font-size:50%;
 	}
+	
+	footer a{
+		font-size:60%;
+	}
+	
+	/*INDEX*/
+	#offers{
+		display:flex;
+		flex-direction:column;
+	}
+	
+	.offer{
+		width:80%;
+	}
+	
+	#indexMain h2{
+		font-size:120%;
+	}
+	
+	#indexMain h4{
+		font-size:110%;
+	}
+	
+	#indexMain p{
+		font-size:90%;
+	}
+	
+	.indexVideo{
+		width:100%;
+		height:auto;
+	}
+
 }
 
-/*MINIMUM WIDTH 450PX*/
+/*WIDTH 450-768PX*/
+@media only screen and (min-width:450px){
+	
+	/*HEADERS*/
+	header h1{
+		font-size:130%;
+	}
+	
+	#uclanLogo{
+		width:30%;
+		height:auto;
+	}
+	
+	#burgerMenu{
+		width:55px;
+		height:auto;
+	}
+	
+	#burgerLinks a{
+		font-size:120%;
+	}
+	
+	/*FOOTERS*/
+	footer h2{
+		font-size:100%;
+	}
+	
+	footer p{
+		font-size:80%;
+	}
+	
+	footer a{
+		font-size:75%;
+	}
+	
+	/*INDEX*/
+	.offer{
+		width:60%;
+	}
+	#indexMain{
+		width:auto;
+	}
+	
+	#indexMain h2{
+		font-size:140%;
+	}
+	
+	#indexMain h4{
+		font-size:120%;
+	}
+	
+	#indexMain p{
+		font-size:110%;
+	}
+	
+	.indexVideo{
+		width:120%;
+		height:auto;
+	}
+	
+}
 
-/*MINIMUM WIDTH 768PX*/
+/*WIDTH 768-1024PX*/
+@media only screen and (min-width:768px){
+	
+	/*HEADERS*/
+	header h1{
+		font-size:170%;
+	}
 
-/*MINIMUM WIDTH 1024PX*/
+	#burgerMenu{
+		display:none;
+	}
+	
+	#burgerLinks{
+		display:none;
+	}
+	
+	#burgerLinks.active{
+		display:none;
+	}
+	
+	#regularLinks{
+		display:block;
+	}
+	
+	#regularLinks a{
+		font-size:125%;
+	}
+	
+	/*FOOTERS*/
+	footer h2{
+		font-size:120%;
+	}
+	
+	footer p{
+		font-size:100%;
+	}
+	
+	footer a{
+		font-size:95%;
+	}
+	
+	/*INDEX*/
+	.offer{
+		width:60%;
+	}
+	#indexMain{
+		width:auto;
+	}
+	
+	#indexMain h2{
+		font-size:140%;
+	}
+	
+	#indexMain h4{
+		font-size:120%;
+	}
+	
+	#indexMain p{
+		font-size:110%;
+	}
+	
+	.indexVideo{
+		width:200%;
+		height:auto;
+	}
+}
 
-/*MINIMUM WIDTH 1440PX*/
+/*WIDTH 1024PX*/
+@media only screen and (min-width:1024px){
+	
+	/*HEADERS*/
+	#uclanLogo{
+		width:20%;
+		height:auto;
+	}
+	
+	header h1{
+		font-size:170%;
+	}
+	
+	#regularLinks a{
+		font-size:125%;
+	}
+	
+}
 
-/*MINIMUM WIDTH 2560*/
