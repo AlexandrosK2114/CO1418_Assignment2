@@ -1,6 +1,15 @@
 <!--Connecting to database-->
 <?php
-  $DATABASE=mysqli_connect("localhost","akyriakou6","XvWvBp7Jw7","akyriakou6");
+	session_start();
+	$DATABASE=mysqli_connect("localhost","akyriakou6","XvWvBp7Jw7","akyriakou6");
+	
+	if(isset($_GET['logout'])){
+		if($_GET['logout']==='1'){
+			$_SESSION['logged-in']=false;
+			$_SESSION['username']='';
+			session_destroy();
+		}
+	}
 ?>
 <!--This HTML document contains all the code used to create the homepage of the shop-->
 <!DOCTYPE html>
@@ -27,10 +36,17 @@
 						
 				<!--Navigation links to the other pages of the store, displayed for devices with large screens (tablets and desktop)-->
 				<nav id="regularLinks">
-					<a href="index.php" class="headerLink">Home</a>
-					<a href="registration.php" class="headerLink">Register</a>
-					<a href="products.php" class="headerLink">Products</a>
-					<a href="cart.php" class="headerLink">Cart</a>			
+					<a href="index.php">Home</a>
+					<a href="products.php">Products</a>
+					<a href="cart.php">Cart</a>
+					<?php 
+						if(isset($_GET['logged-in'])){
+							if($_SESSION['logged-in']===true)
+								echo "<a href='index.php?logout=1'>Sign Out</a>";
+						}
+						else
+							echo"<a href='login.php'>Sign In</a>"
+					?>			
 				</nav>
 					
 				<!--Burger menu displayed for devices with smaller screens (phones). When the burger menu is present, the above links 
@@ -42,10 +58,10 @@
 			<!--These links appear when the burger menu icon is clicked. They are seperate from the other contents of the header as to not
 			be part of the flexbox. In devices with large screens both the burger menu and its links disappear and the main navigation links above appear-->
 			<nav id="burgerLinks">
-				<a href="index.php" class="headerLink">Home</a>
-				<a href="registration.php" class="headerLink">Register</a>
-				<a href="products.php" class="headerLink">Products</a>
-				<a href="cart.php" class="headerLink">Cart</a>				
+				<a href="index.php">Home</a>
+				<a href="products.php">Products</a>
+				<a href="cart.php">Cart</a>
+				<a href="login.php">Sign In</a>
 			</nav>
 				
 		</header>
@@ -56,6 +72,14 @@
 			
 			<div id="indexMain">
 			
+				<?php
+					if(isset($_GET['logged-in'])){
+						if($_SESSION["logged-in"]===true){
+							echo "<h2>Hello ".htmlentities($_SESSION['username'])."</h2>";
+						}
+					}
+				?>
+			
 				<h2>Offers</h2>
 				
 				<div id="offers">
@@ -64,9 +88,11 @@
 				
 					$sqlQuery="SELECT * FROM tbl_offers";
 					
-					$sqlResponse=mysqli_query($DATABASE, $sqlQuery);
+					$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+					mysqli_stmt_execute($sqlResponse);
+					$result=mysqli_stmt_get_result($sqlResponse);
 					
-					while($row=mysqli_fetch_array($sqlResponse)){
+					while($row=mysqli_fetch_array($result)){
 						
 						echo "<div class='offer'>";
 						echo "<h4>".$row['offer_title']."</h4>";

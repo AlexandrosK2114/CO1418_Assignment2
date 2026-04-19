@@ -96,6 +96,11 @@ footer > *, a{
 	color:#FAFAFA;
 }
 
+/******SIGN IN STYLING******/
+form{
+	background-color:pink;
+}
+
 /******PRODUCTS STYLING*****/
 #products{
 	display:grid;
