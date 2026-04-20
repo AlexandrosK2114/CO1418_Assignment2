@@ -5,79 +5,105 @@
 	
 	if($_SERVER["REQUEST_METHOD"]==="POST"){
 		
-		$error="";
+		$error='';
 		
-		if($_GET['action']==='login'){
-			
+		if(htmlspecialchars($_GET['action'])==='login'){
 			
 			$email=trim($_POST["email"]);
-			$password=trim($_POST["password"]);
+			$password=$_POST["password"];
 			
-			$request="SELECT user_name,user_email,user_pass FROM tbl_users WHERE user_email='$email'";
-			$response=mysqli_query($DATABASE,$request,MYSQLI_ASSOC);
+			$sqlQuery="SELECT user_id, user_name, user_pass FROM tbl_users WHERE user_email=? LIMIT 1";
+			$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+			mysqli_stmt_bind_param($sqlResponse,'s',$email);
+			mysqli_stmt_execute($sqlResponse);
+			mysqli_stmt_store_result($sqlResponse);
+
 			
-			$row=mysqli_fetch_assoc($response);
-			
-			if($row!==null){
-				$retrievedEmail=$row["user_email"];
-				$retrievedPass=$row["user_pass"];
-			
-				if($email===$retrievedEmail && $password===$retrievedPass){
-					$_SESSION["username"]=$row["user_name"];
+			if(mysqli_stmt_num_rows($sqlResponse)===1){
+				
+				mysqli_stmt_bind_result($sqlResponse,$retrievedID,$retrievedName,$retrievedPass);
+				mysqli_stmt_fetch($sqlResponse);
+				
+				if(password_verify($password, $retrievedPass)){
+					
+					$_SESSION["username"]=$retrievedName;
+					$_SESSION["userID"]=$retrievedID;
 					$_SESSION["logged-in"]=true;
 					$_SESSION["error"]="";
 					header("Location:index.php");
+					exit();
+				}
+				else{
+					$error="Wrong password. Please try again.";
 				}
 			}
 			else{
-				$error="Wrong e-mail or password. Please try again";
+				$error="Wrong e-mail or password. Please try again.";
 			}
 		}
-		else if($_GET['action']==='register'){
+		
+		else if(htmlspecialchars($_GET['action'])==='register'){
 			
+			$errors=[];
 			$errorExists=false;
 			
-			$addedName=trim($_POST['name2']);
+			$addedName=$_POST['name2'];
 			$addedEmail=trim($_POST['email2']);
-			$addedPassword=trim($_POST['password2']);
-			$addedConfirmPassword=trim($_POST['confirmPassword']);
+			$addedPassword=$_POST['password2'];
+			$addedConfirmPassword=$_POST['confirmPassword'];
 			$addedHomeAddress=$_POST['homeAddress'];
 			
 			if(!filter_var($addedEmail,FILTER_VALIDATE_EMAIL)){
 				$errorExists=true;
+				$errors[]="The e-mail address you have provided is not valid";
 			}
 			
 			if($addedPassword!==$addedConfirmPassword){
 				$errorExists=true;
+				$errors[]="The passwords do not match.";
 			}
 			
 			if(!$errorExists){
 				
-				$request="SELECT user_id FROM tbl_users WHERE user_name='$addedName'";
-				$response=mysqli_query($DATABASE,$request);
+				$sqlQuery="SELECT user_id FROM tbl_users WHERE user_name=?";
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+				mysqli_stmt_bind_param($sqlResponse,'s',$addedName);
+				mysqli_stmt_execute($sqlResponse);
+				mysqli_stmt_store_result($sqlResponse);
 				
-				$row=mysqli_fetch_array($response);
-				
-				if($row!==null)
+				if(mysqli_stmt_num_rows($sqlResponse)>0){
 					$errorExists=true;
+					$errors[]="The username you have added is already in use."
+				}
+				
+				mysqli_stmt_close($sqlResponse);
 			}
 			
 			if(!$errorExists){
 				
-				$request="SELECT user_id FROM tbl_users WHERE user_email='$addedEmail'";
-				$response=mysqli_query($DATABASE,$request);
+				$sqlQuery="SELECT user_id FROM tbl_users WHERE user_email=?";
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+				mysqli_stmt_bind_param($sqlResponse,'s',$addedEmail);
+				mysqli_stmt_execute($sqlResponse);
+				mysqli_stmt_store_result($sqlResponse);
 				
-				$row=mysqli_fetch_array($response);
-				
-				if($row!==null)
+				if(mysqli_stmt_num_rows($sqlResponse)>0){
 					$errorExists=true;
+					$errors[]="The e-mail you have added is already registered."
+				}
+				
+				mysqli_stmt_close($sqlResponse);
 			}
 			
 			if(!$errorExists){
-					
-				$request="INSERT INTO tbl_users (user_name,user_email,user_pass,user_address) VALUES('$addedName','$addedEmail','$addedPassword','$addedHomeAddress')";
 				
-				$response=mysqli_query($DATABASE,$request);
+				$hashed_password=password_hash($addedPassword, PASSWORD_DEFAULT);
+				$sqlQuery="INSERT INTO tbl_users (user_name,user_email,user_pass,user_address) VALUES(?,?,?,?)";
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+				mysqli_stmt_bind_param($sqlResponse,"ssss",$addedName,$addedEmail,$hashed_password,$addedHomeAddress);
+				mysqli_stmt_execute($sqlResponse);
+				
+				
 				
 			}
 		}

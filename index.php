@@ -40,12 +40,12 @@
 					<a href="products.php">Products</a>
 					<a href="cart.php">Cart</a>
 					<?php 
-						if(isset($_GET['logged-in'])){
-							if($_SESSION['logged-in']===true)
+						if(isset($_SESSION['logged-in'])){
+							if(htmlspecialchars($_SESSION['logged-in'])===true)
 								echo "<a href='index.php?logout=1'>Sign Out</a>";
 						}
 						else
-							echo"<a href='login.php'>Sign In</a>"
+							echo"<a href='login.php'>Sign In</a>";
 					?>			
 				</nav>
 					
@@ -61,7 +61,14 @@
 				<a href="index.php">Home</a>
 				<a href="products.php">Products</a>
 				<a href="cart.php">Cart</a>
-				<a href="login.php">Sign In</a>
+				<?php 
+					if(isset($_SESSION['logged-in'])){
+						if(htmlspecialchars($_SESSION['logged-in'])===true)
+							echo "<a href='index.php?logout=1'>Sign Out</a>";
+					}
+					else
+						echo"<a href='login.php'>Sign In</a>";
+				?>			
 			</nav>
 				
 		</header>
@@ -95,10 +102,12 @@
 					while($row=mysqli_fetch_array($result)){
 						
 						echo "<div class='offer'>";
-						echo "<h4>".$row['offer_title']."</h4>";
-						echo "<p>".$row['offer_desc']."</p>";
+						echo "<h4>".htmlspecialchars($row['offer_title'])."</h4>";
+						echo "<p>".htmlspecialchars($row['offer_desc'])."</p>";
 						echo "</div>";
 					}
+					
+					mysqli_stmt_close($sqlResponse);
 					
 				?>
 				</div>

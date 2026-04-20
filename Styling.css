@@ -108,6 +108,11 @@ form{
 	grid-template-rows:auto auto auto;
 }
 
+.listingImage{
+	width:50px;
+	height:auto;
+}
+
 /*MEDIA QUERIES*/
 /*WIDTH 0-450PX*/
 @media only screen and (min-width:0px){

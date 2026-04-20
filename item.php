@@ -16,7 +16,7 @@
 <html lang="en">
 
 	<head>
-		<title>Products</title>
+		<title>Product</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="Styling.css" type="text/css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +45,7 @@
 								echo "<a href='index.php?logout=1'>Sign Out</a>";
 						}
 						else
-							echo"<a href='login.php'>Sign In</a>";
+							echo "<a href='login.php'>Sign In</a>";
 					?>			
 				</nav>
 					
@@ -76,58 +76,42 @@
 		<script src="ApplicationScript.js"></script>
 		
 		<main>
-		
-			<!--Division which contain the filter that allows users to differentiate products from in and out of stock-->
-			<div id="filter">
-			
-				<h2>Products</h2>
 				
-				<!--Filtering functionality is done with a <select> element. The default value of the element displays all the products. The "onchange" attribute calls the "changeProducts()" function inside the javascript file to alter the displayed products-->
-				<p>Filter: 
-					<select id="selector" onchange="changeProducts()">
-						<option value="All products">All products</option>
-						<option value="In stock">In stock</option>
-						<option value="Out of stock">Out of stock</option>
-					</select>
-				</p>
-				
-			</div>
-			
-			<!--This division is used to display all the product listings-->
-			<div id="products">
-			<?php
-				
-				$sqlQuery="SELECT * FROM tbl_products";	
-				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-				mysqli_stmt_execute($sqlResponse);
-				$result=mysqli_stmt_get_result($sqlResponse);
-				mysqli_stmt_close($sqlResponse);
-				
-				while($row=mysqli_fetch_array($result)){
+				<?php
+				if(isset($_GET['itemID'])){
 					
-					echo "<div class='product'><img src='".$row["product_src"]."' class='listingImage'/>";
-					echo "<h4>".$row["product_title"]."</h4>";
-					echo "<p>".$row["product_price"]."</p>";
-					//echo "<p>".$row["product_stock"]."</p>";
-					echo "<p>".$row["product_desc"]."</p>";
-					echo "<p><a href='item.php?itemID=".$row['product_id']."'>View</a></p>";
-					echo "<button>Add to cart</button>";
-					echo "</div>";
+					$itemID=(int)htmlspecialchars($_GET['itemID']);
+					
+					$sqlQuery="SELECT * FROM tbl_products WHERE product_id=?";
+					$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
+					mysqli_stmt_bind_param($sqlResponse,'i',$itemID);
+					mysqli_stmt_execute($sqlResponse);
+					
+					$result=mysqli_stmt_get_result($sqlResponse);
+					
+					if($row=mysqli_fetch_array($result)){
+						
+						echo "<div>";
+						echo "<img src='".$row['product_src']."'/>";
+						echo "<h4>".$row["product_title"]."</h4>";
+						echo "<p>".$row["product_price"]."</p>";
+						//echo "<p>".$row["product_stock"]."</p>";
+						echo "<p>".$row["product_desc"]."</p>";
+						echo "<button>Add to cart</button>";
+						echo "</div>";
+					}
+					else
+						echo "error";
 				}
-			
-			?>	
-			</div>
-			
-			<!--This is an arrow icon which can be clicked to go to the top of the page.-->
-			<img id="arrow" src="resources/images/arrow_icon.png" alt="Arrow icon used to go to the top of the page" onclick="goToTop()">
-			
+				?>
+				
 		</main>
-
+		
 		<footer>
 				
 			<div>
 				<h2>Links</h2>
-				<p><a class="footerLink" href="https://www.lancashiresu.co.uk/">Student Union Page</a></p>
+				<a href="https://www.lancashiresu.co.uk/">Student Union Page</a>
 			</div>
 		
 			<div>
@@ -142,7 +126,7 @@
 			</div>
 				
 		</footer>
-		
+	
 	</body>
 	
 </html>
