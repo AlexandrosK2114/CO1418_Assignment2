@@ -1,13 +1,37 @@
-<!--Connecting to database-->
 <?php
-	session_start();
-	$DATABASE=mysqli_connect("localhost","akyriakou6","XvWvBp7Jw7","akyriakou6");
+	//Including the php file with the database connection
+	include 'conn.php';
 	
-	if(isset($_GET['logout'])){
-		if($_GET['logout']==='1'){
-			$_SESSION['logged-in']=false;
-			$_SESSION['username']='';
-			session_destroy();
+	//A hidden indicator which tells if the user is logged-in or not is created for use in javascript
+	if(isset($_SESSION['logged-in'])){
+		if($_SESSION['logged-in']===true)
+			echo "<span id='logInIndicator'style='display:none;'>true</span>";
+	}
+	else
+		echo "<span id='logInIndicator'style='display:none;'>false</span>";
+
+	//The following are executed only when the user is logged-in
+	if(isset($_SESSION['logged-in'])){
+		if($_SESSION['logged-in']===true){
+			//Execution occurs only when a form is submitted via POST
+			//The following code adds the item ID to the cart cookie
+			if($_SERVER['REQUEST_METHOD']==='POST'){
+				
+				$productID=(int)$_POST['product_ID'];
+				
+				//If the cart cookie exists, retrieve it
+				if(isset($_COOKIE['cart'])){
+					$cart=json_decode($_COOKIE['cart']);//decoding the JSON format
+					array_push($cart,$productID);//add the new ID into the cart
+				}
+				//If it does not exist, create a new cart
+				else{
+					$cart=[];
+					array_push($cart,$productID);
+				}
+				//Set the cart cookie. If it already exists it will be overwritten with new IDs
+				setCookie('cart',json_encode($cart),time() + (86400 * 30), "/");//encoding the cart array into JSON format
+			}
 		}
 	}
 ?>
@@ -40,10 +64,14 @@
 					<a href="products.php">Products</a>
 					<a href="cart.php">Cart</a>
 					<?php 
+						//If the user is logged-in, a sign out link is displayed
 						if(isset($_SESSION['logged-in'])){
-							if(htmlspecialchars($_SESSION['logged-in'])===true)
+							if($_SESSION['logged-in']===true)
 								echo "<a href='index.php?logout=1'>Sign Out</a>";
+							else
+								echo"<a href='login.php'>Sign In</a>";
 						}
+						//Otherwise a link to the login page is displayed
 						else
 							echo"<a href='login.php'>Sign In</a>";
 					?>			
@@ -62,67 +90,83 @@
 				<a href="products.php">Products</a>
 				<a href="cart.php">Cart</a>
 				<?php 
-					if(isset($_SESSION['logged-in'])){
-						if(htmlspecialchars($_SESSION['logged-in'])===true)
-							echo "<a href='index.php?logout=1'>Sign Out</a>";
-					}
-					else
-						echo"<a href='login.php'>Sign In</a>";
+					//If the user is logged-in, a sign out link is displayed
+						if(isset($_SESSION['logged-in'])){
+							if($_SESSION['logged-in']===true)
+								echo "<a href='index.php?logout=1'>Sign Out</a>";
+							else
+								echo"<a href='login.php'>Sign In</a>";
+						}
+						//Otherwise a link to the login page is displayed
+						else
+							echo"<a href='login.php'>Sign In</a>";
 				?>			
 			</nav>
 				
 		</header>
 		
-		<script src="ApplicationScript.js"></script>
-		
 		<main>
 		
-			<!--Division which contain the filter that allows users to differentiate products from in and out of stock-->
-			<div id="filter">
-			
-				<h2>Products</h2>
+			<div>
+				<!--Division which contain the filter that allows users to differentiate products from in and out of stock-->
+				<div id="filter">
 				
-				<!--Filtering functionality is done with a <select> element. The default value of the element displays all the products. The "onchange" attribute calls the "changeProducts()" function inside the javascript file to alter the displayed products-->
-				<p>Filter: 
-					<select id="selector" onchange="changeProducts()">
-						<option value="All products">All products</option>
-						<option value="In stock">In stock</option>
-						<option value="Out of stock">Out of stock</option>
-					</select>
-				</p>
+					<h2>Products</h2>
+
+					<p>Filter: 
+						<select id="selector" onchange="changeProducts()">
+							<option value="All products">All products</option>
+							<option value="In stock">In stock</option>
+							<option value="Out of stock">Out of stock</option>
+						</select>
+					</p>
 				
-			</div>
-			
-			<!--This division is used to display all the product listings-->
-			<div id="products">
-			<?php
+				</div>
 				
-				$sqlQuery="SELECT * FROM tbl_products";	
-				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-				mysqli_stmt_execute($sqlResponse);
-				$result=mysqli_stmt_get_result($sqlResponse);
-				mysqli_stmt_close($sqlResponse);
-				
-				while($row=mysqli_fetch_array($result)){
+				<!--This division is used to display all the product listings-->
+				<div id="products">
+				<?php
+					//Retrieving all the products from the database and displaying them using the following query
+					$sqlQuery="SELECT * FROM tbl_products";	
+
+					$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//preparing the query
+					mysqli_stmt_execute($sqlResponse);//executing it
+					$result=mysqli_stmt_get_result($sqlResponse);//retrieving the result
+					mysqli_stmt_close($sqlResponse);//closing the query after retrieval
 					
-					echo "<div class='product'><img src='".$row["product_src"]."' class='listingImage'/>";
-					echo "<h4>".$row["product_title"]."</h4>";
-					echo "<p>".$row["product_price"]."</p>";
-					//echo "<p>".$row["product_stock"]."</p>";
-					echo "<p>".$row["product_desc"]."</p>";
-					echo "<p><a href='item.php?itemID=".$row['product_id']."'>View</a></p>";
-					echo "<button>Add to cart</button>";
-					echo "</div>";
-				}
-			
-			?>	
+					while($row=mysqli_fetch_array($result)){//retrieving each table record as an array until there are no more
+						
+						$productID=$row['product_id'];//Retrieving the product id
+						$productStock=$row['product_stock'];//Retrieving the product stock
+						
+						//Displaying each product using each fetched array
+						echo "<div class='product' value='".$productStock."'><img src='".$row["product_src"]."' class='listingImage'/>";
+						echo "<div class='productDesc'>";
+						echo "<h2>".$row["product_title"]."</h2>";
+						echo "<h4>".$row["product_price"]."&pound;</h4>";
+						echo "<p>".$row["product_desc"]."</p>";
+						echo "<p><a href='item.php?itemID=".$row['product_id']."'>View</a></p>";
+						echo "<form method='POST' onsubmit='return validateAddToCart(\"".$productStock."\")' action='products.php'>";
+						echo "<input type='hidden' name='product_ID' value='$productID'>";
+						echo "<input type='hidden' name='product_Stock' value='$productStock'>";
+						echo "<button type='submit' class='appButton'>Add to cart</button>";
+						echo "</form>";
+						echo "</div>";
+						echo "</div>";
+					}
+				
+				?>
+				</div>
+				
 			</div>
 			
 			<!--This is an arrow icon which can be clicked to go to the top of the page.-->
-			<img id="arrow" src="resources/images/arrow_icon.png" alt="Arrow icon used to go to the top of the page" onclick="goToTop()">
+			<img id="arrow" src="resources/arrow_icon.png" alt="Arrow icon used to go to the top of the page" onclick="goToTop()">
+		
+			<script src="ApplicationScript.js"></script>
 			
 		</main>
-
+		
 		<footer>
 				
 			<div>

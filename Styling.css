@@ -8,11 +8,26 @@ main{
 	flex-direction:column;
 	justify-content:center;
 	align-items:center;
+	padding:5%;
 }
 
 body{
 	margin:0;
 	padding:0;
+}
+
+.appButton{
+	background-color:#34516C;
+	border-radius:3px;
+	color:#F8F8FF;
+	cursor:pointer;
+	padding:1%;
+}
+
+.appForm{
+	background-color:#eaeaf0;
+	padding:5%;
+	border-radius:20px;
 }
 
 /************HEADERS STYLING**************/
@@ -72,8 +87,11 @@ footer > *, a{
 #indexMain{
 	display:flex;
 	flex-direction:column;
-	align-items:flex-start;
-	padding:5%;
+	align-self:center;
+}
+
+#offers{
+	align-items:center;
 }
 
 #indexMain h2{
@@ -87,35 +105,104 @@ footer > *, a{
 .offer{
 	margin-bottom:2%;
 	border-radius:20px;
-	padding:1%;
+	padding:2%;
 	text-align:center;
-	background-color:#0000004A;
+	background-color:#eaeaf0;
 }
 
 .offer p{
-	color:#FAFAFA;
+	color:black;
 }
 
-/******SIGN IN STYLING******/
-form{
-	background-color:pink;
+/******LOGIN*******/
+#registrationMessage{
+	background-color:#eaeaf0;
+	padding:3%;
+	border-radius:20px;
+	text-align:center;
 }
 
 /******PRODUCTS STYLING*****/
-#products{
-	display:grid;
-	grid-template-columns:auto auto auto;
-	grid-template-rows:auto auto auto;
+.product{
+	text-align:center;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
 }
 
-.listingImage{
-	width:50px;
-	height:auto;
+.productDesc{
+	background-color:#F8F8FF;
+	padding:1%;
+}
+
+.product h4,h2{
+	color:#34516C;
+}
+
+.product a{
+	color:#F2BE1A;
+}
+
+#arrow{
+	border:solid white 5px;
+	border-radius:50px;
+	background-color:white;
+	box-shadow:1px 1px 5px;
+	width:2vw;
+	height:2vw;
+	position:fixed;
+	top:550px;
+	right:20px;
+	cursor:pointer;
+}
+
+/*******ITEM  STYLING*****/
+#itemDesc{
+	background-color:#eaeaf0;
+	padding:3%;
+}
+
+#itemDesc > *{
+	margin:2%;
+}
+
+.review{
+	background-color:#eaeaf0;
+	padding:3%;
+	border-radius:20px;
+	margin-bottom:2%;
+}
+
+.review h4{
+	color:#F2BE1A;
+}
+/*******CART STYLING******/
+#cartList{
+	list-style:none;
+	padding:0;
+}
+
+.cartItem{
+	padding:5%;
+	display:flex;
+	flex-direction:row;
+	border-top:solid 2px #eaeaf0;
+	border-bottom:solid 2px #eaeaf0;
+}
+
+.cartItem div{
+	padding:5%;
 }
 
 /*MEDIA QUERIES*/
+
 /*WIDTH 0-450PX*/
 @media only screen and (min-width:0px){
+	
+	/*GENERAL*/
+	.appButton{
+		font-size:110%;
+	}
 	
 	/*HEADERS*/
 	header h1{
@@ -181,11 +268,113 @@ form{
 		font-size:90%;
 	}
 	
+	.offer {
+		font-size:90%;
+	}
+	
 	.indexVideo{
-		width:100%;
-		height:auto;
+		align-self:center;
 	}
 
+	.indexVideo{
+		width:250px;
+		height:auto;
+	}
+	
+	/*LOGIN*/
+	#loginContent h2,#registrationMessage h2,#reviewForm h2{
+		font-size:120%;
+	}
+
+	#loginContent p,#registrationMessage p,#reviewForm p{
+		font-size:80%;
+	}
+
+	#loginContent input,#reviewForm input{
+		font-size:70%;
+	}
+
+	/*PRODUCTS*/
+	#products{
+		display:flex;
+		flex-direction:column;
+		gap:50px;
+	}
+	
+	.listingImage{
+		width:210px;
+		height:auto;
+	}
+	
+	.productDesc h2,#itemDesc h2{
+		font-size:110%;
+	}
+	
+	.productDesc h4,#itemDesc h4{
+		font-size:100%;
+	}
+	
+	.productDesc p,#itemDesc p{
+		font-size:90%;
+	}
+	
+	.productDesc a{
+		font-size:120%;
+	}
+	
+	#arrow{
+		width:30px;
+		height:auto;
+	}
+	
+	/*ITEM*/
+	#item{
+		display:flex;
+		flex-direction:column;
+		align-items:center;
+		text-align:center;
+	}
+
+	#itemImage{
+		width:270px;
+		height:auto;
+	}
+	
+	#itemDesc{
+		display:flex;
+		flex-direction:column;
+		align-items:center;
+	}
+	
+	.review h4{
+		font-size:120%;
+	}
+	
+	.review h5{
+		font-size:110%;
+	}
+	
+	.review p{
+		font-size:100%;
+	}
+	
+	/*CART*/
+	#cart h2{
+		font-size:110%;
+	}
+	
+	#cart h4{
+		font-size:100%;
+	}
+	
+	#cart p{
+		font-size:90%;
+	}
+	
+	.cartImage{
+		width:125px;
+		height:auto;
+	}
 }
 
 /*WIDTH 450-768PX*/
@@ -225,12 +414,9 @@ form{
 	
 	/*INDEX*/
 	.offer{
-		width:60%;
+		width:70%;
 	}
-	#indexMain{
-		width:auto;
-	}
-	
+
 	#indexMain h2{
 		font-size:140%;
 	}
@@ -242,12 +428,74 @@ form{
 	#indexMain p{
 		font-size:110%;
 	}
-	
+
 	.indexVideo{
-		width:120%;
+		width:350px;
+		height:auto;
+	}
+
+	/*LOGIN*/
+	#loginContent h2,#registrationMessage h2,#reviewForm h2{
+		font-size:140%;
+	}
+
+	#loginContent p,#registrationMessage p,#reviewForm p{
+		font-size:100%;
+	}
+
+	#loginContent input,#reviewForm input{
+		font-size:90%;
+	}
+	
+	/*ITEM*/
+	#itemImage{
+		width:270px;
 		height:auto;
 	}
 	
+	#itemDesc{
+		display:flex;
+		flex-direction:column;
+		align-items:center;
+	}
+	
+	/*CART*/
+	#cart h2{
+		font-size:130%;
+	}
+	
+	#cart h4{
+		font-size:110%;
+	}
+	
+	#cart p{
+		font-size:100%;
+	}
+	
+	.cartImage{
+		width:200px;
+		height:auto;
+	}
+}
+
+/*FOR PRODUCTS AND ITEM PAGE ONLY*/
+@media only screen and (min-width:550px){
+	#products{
+		display:grid;
+		grid-template-columns:auto auto;
+	}
+	
+	#item{
+		display:flex;
+		flex-direction:row;
+		align-items:center;
+		text-align:center;
+	}
+	
+	#itemImage{
+		width:230px;
+		height:auto;
+	}
 }
 
 /*WIDTH 768-1024PX*/
@@ -300,22 +548,110 @@ form{
 	}
 	
 	#indexMain h2{
-		font-size:140%;
+		font-size:150%;
 	}
 	
 	#indexMain h4{
-		font-size:120%;
+		font-size:130%;
 	}
 	
 	#indexMain p{
+		font-size:120%;
+	}
+	
+	.offer{
+		font-size:100%;
+	}
+
+	.indexVideo{
+		align-self:flex-start;
+	}
+
+	.indexVideo{
+		width:500px;
+		height:250px;
+	}
+	
+	/*PRODUCTS*/
+	#products{
+		display:grid;
+		grid-template-rows:auto auto auto;
+		grid-template-columns:auto auto auto;
+	}
+	
+	.listingImage{
+		width:220px;
+		height:auto;
+	}
+	
+	.productDesc h2{
 		font-size:110%;
 	}
 	
-	.indexVideo{
-		width:200%;
+	.productDesc h4{
+		font-size:100%;
+	}
+	
+	.productDesc p{
+		font-size:90%;
+	}
+	
+	.productDesc a{
+		font-size:120%;
+	}
+	
+	#arrow{
+		width:30px;
 		height:auto;
 	}
-}
+	
+	/*ITEM*/
+	#itemImage{
+		width:290px;
+		height:auto;
+	}
+	
+	#itemDesc h2{
+		font-size:130%;
+	}
+	
+	#itemDesc h4{
+		font-size:120%;
+	}
+	
+	#itemDesc p{
+		font-size:110%;
+	}
+	
+	.review h4{
+		font-size:130%;
+	}
+	
+	.review h5{
+		font-size:120%;
+	}
+	
+	.review p{
+		font-size:110%;
+	}
+
+	/*CART*/
+	#cart h2{
+		font-size:140%;
+	}
+	
+	#cart h4{
+		font-size:120%;
+	}
+	
+	#cart p{
+		font-size:110%;
+	}
+	
+	.cartImage{
+		width:250px;
+		height:auto;
+	}
 
 /*WIDTH 1024PX*/
 @media only screen and (min-width:1024px){
@@ -332,6 +668,24 @@ form{
 	
 	#regularLinks a{
 		font-size:125%;
+	}
+
+	/*LOGIN*/
+	#loginContent h2,#registrationMessage h2,#reviewForm h2{
+		font-size:150%;
+	}
+
+	#loginContent p,#registrationMessage p,#reviewForm p{
+		font-size:110%;
+	}
+
+	#loginContent input,#reviewForm input{
+		font-size:100%;
+	}
+
+	/*CART*/
+	#cart{
+		margin-bottom:20%;
 	}
 	
 }

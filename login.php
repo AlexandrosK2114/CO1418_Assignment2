@@ -1,109 +1,133 @@
-<!--Connecting to database-->
 <?php
-	session_start();
-	$DATABASE=mysqli_connect("localhost","akyriakou6","XvWvBp7Jw7","akyriakou6");
+	//Including the php file with the database connection
+	include 'conn.php';
 	
+	//Execute the following if a form submission occurs
 	if($_SERVER["REQUEST_METHOD"]==="POST"){
 		
 		$error='';
 		
+		//Execute the following if the form is related to a login
 		if(htmlspecialchars($_GET['action'])==='login'){
 			
+			//Retrieve values from POST superglobal array
 			$email=trim($_POST["email"]);
 			$password=$_POST["password"];
 			
+			//Prepare and execute a sql query to check if the email matches one inside the database
 			$sqlQuery="SELECT user_id, user_name, user_pass FROM tbl_users WHERE user_email=? LIMIT 1";
-			$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-			mysqli_stmt_bind_param($sqlResponse,'s',$email);
-			mysqli_stmt_execute($sqlResponse);
-			mysqli_stmt_store_result($sqlResponse);
+			$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//prepare statement
+			mysqli_stmt_bind_param($sqlResponse,'s',$email);//bind parameters to the statemnt
+			mysqli_stmt_execute($sqlResponse);//execute the statement
+			mysqli_stmt_store_result($sqlResponse);//store the result of the database's response
 
 			
-			if(mysqli_stmt_num_rows($sqlResponse)===1){
+			if(mysqli_stmt_num_rows($sqlResponse)===1){//check if there is only 1 entry matching the email
 				
+				//bind the contents of the table entry to the following variables
 				mysqli_stmt_bind_result($sqlResponse,$retrievedID,$retrievedName,$retrievedPass);
 				mysqli_stmt_fetch($sqlResponse);
 				
+				//Using password_verify to ensure the retrieved hashed password is the same as the inserted password
 				if(password_verify($password, $retrievedPass)){
 					
+					//If all is okay, create the session and set session variables
 					$_SESSION["username"]=$retrievedName;
 					$_SESSION["userID"]=$retrievedID;
 					$_SESSION["logged-in"]=true;
-					$_SESSION["error"]="";
-					header("Location:index.php");
-					exit();
+					header("Location:index.php");//Redirect user to index page
+					exit();//Stop the execution of the rest of the script
 				}
+				//If the passwords do not match, show an appropriate error
 				else{
 					$error="Wrong password. Please try again.";
 				}
 			}
+			//If the database returned nothing, notify the user that they must have made a mistake
 			else{
 				$error="Wrong e-mail or password. Please try again.";
 			}
 		}
-		
+		//Execute the following if the form is related to registration
 		else if(htmlspecialchars($_GET['action'])==='register'){
 			
 			$errors=[];
 			$errorExists=false;
 			
+			//Retrieving all values from POST superglobal array
 			$addedName=$_POST['name2'];
-			$addedEmail=trim($_POST['email2']);
+			$addedEmail=trim($_POST['email2']);//using trim() to remove spaces, if any exist
 			$addedPassword=$_POST['password2'];
 			$addedConfirmPassword=$_POST['confirmPassword'];
 			$addedHomeAddress=$_POST['homeAddress'];
 			
+			//Using filter_var() and FILITER_VALIDATE_EMAIL to check if the email is valid
+			//Otherwise, stop the process and display an error
 			if(!filter_var($addedEmail,FILTER_VALIDATE_EMAIL)){
 				$errorExists=true;
 				$errors[]="The e-mail address you have provided is not valid";
 			}
 			
+			//Checking if the added password is equal to the confirmation password
+			//Otherwise, stop the process and display an error
 			if($addedPassword!==$addedConfirmPassword){
 				$errorExists=true;
 				$errors[]="The passwords do not match.";
 			}
 			
+			//Checking if the added username already exists inside the database
 			if(!$errorExists){
 				
 				$sqlQuery="SELECT user_id FROM tbl_users WHERE user_name=?";
-				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-				mysqli_stmt_bind_param($sqlResponse,'s',$addedName);
-				mysqli_stmt_execute($sqlResponse);
-				mysqli_stmt_store_result($sqlResponse);
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//prepare the query
+				mysqli_stmt_bind_param($sqlResponse,'s',$addedName);//bind the added username to it
+				mysqli_stmt_execute($sqlResponse);//execute it
+				mysqli_stmt_store_result($sqlResponse);//retrieve the result
 				
-				if(mysqli_stmt_num_rows($sqlResponse)>0){
+				if(mysqli_stmt_num_rows($sqlResponse)>0){//if the response contains table records then stop the process
 					$errorExists=true;
-					$errors[]="The username you have added is already in use."
+					//Display an appropriate error
+					$errors[]="The username you have added is already in use. Choose another one.";
 				}
 				
+				//End the sql query
 				mysqli_stmt_close($sqlResponse);
 			}
 			
+			//Checking if the added email is already inside the database
 			if(!$errorExists){
 				
 				$sqlQuery="SELECT user_id FROM tbl_users WHERE user_email=?";
-				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-				mysqli_stmt_bind_param($sqlResponse,'s',$addedEmail);
-				mysqli_stmt_execute($sqlResponse);
-				mysqli_stmt_store_result($sqlResponse);
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//preparing the query
+				mysqli_stmt_bind_param($sqlResponse,'s',$addedEmail);//binding the added email to it
+				mysqli_stmt_execute($sqlResponse);//executing it
+				mysqli_stmt_store_result($sqlResponse);//storing the result
 				
-				if(mysqli_stmt_num_rows($sqlResponse)>0){
+				if(mysqli_stmt_num_rows($sqlResponse)>0){//If the qury yielded any results stop the process
 					$errorExists=true;
-					$errors[]="The e-mail you have added is already registered."
+					$errors[]="The e-mail you have added is already registered.";//Present an appropriate error
 				}
 				
 				mysqli_stmt_close($sqlResponse);
 			}
 			
+			//If all is well, insert the credentials into the tbl_users table of the database
 			if(!$errorExists){
 				
+				//Using password_hash() and PASSWORD_DEFAULT to create a hash of the password and save that instead of the original
 				$hashed_password=password_hash($addedPassword, PASSWORD_DEFAULT);
 				$sqlQuery="INSERT INTO tbl_users (user_name,user_email,user_pass,user_address) VALUES(?,?,?,?)";
-				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-				mysqli_stmt_bind_param($sqlResponse,"ssss",$addedName,$addedEmail,$hashed_password,$addedHomeAddress);
-				mysqli_stmt_execute($sqlResponse);
+				$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//preparing the query
+				mysqli_stmt_bind_param($sqlResponse,"ssss",$addedName,$addedEmail,$hashed_password,$addedHomeAddress);//binding all the data to it
+				mysqli_stmt_execute($sqlResponse);//executing it
 				
+				if($sqlResponse){
+					$success=true;
+				}
+				else
+					$success=false;
 				
+				mysqli_stmt_close($sqlResponse);
 				
 			}
 		}
@@ -114,15 +138,13 @@
 <html lang="en">
 
 	<head>
-		<title>Homepage</title>
+		<title>Sign-In</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="Styling.css" type="text/css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	
 	<body>
-		
-		<!--This section displays a header which contains the university logo, navigation links and a burger menu for smaller devices-->
 		
 		<header>
 			
@@ -146,8 +168,7 @@
 			
 			</div>
 			
-			<!--These links appear when the burger menu icon is clicked. They are seperate from the other contents of the header as to not
-			be part of the flexbox. In devices with large screens both the burger menu and its links disappear and the main navigation links above appear-->
+			<!--These links appear when the burger menu icon is clicked. #In devices with large screens both the burger menu and its links disappear and the main navigation links above appear-->
 			<nav id="burgerLinks">
 				<a href="index.php">Home</a>
 				<a href="products.php">Products</a>
@@ -157,25 +178,52 @@
 				
 		</header>
 		
-		<script src="ApplicationScript.js"></script>
-		
 		<main>
 			
+			<!--Message which appears after successful or unsuccessful registration-->
+			<?php
+			//Execute only when a registration form is submitted
+			if($_SERVER["REQUEST_METHOD"]==="POST"){
+				if(htmlspecialchars($_GET['action'])==='register'){
+					//Display all errors which have occurred
+					echo "<div id='registrationMessage'>";
+					if($errorExists){
+						echo "<h2>Your registration was unsuccessful.</h2>";
+						for($i=0; $i<count($errors); $i++)
+							echo "<p>".$errors[$i]."</p>";
+					}
+					//Inform of successful registration
+					else{
+						if($success)
+							echo "<h2>Your registration was succesful. Please sign into your account.</h2>";
+						//If any problems occurred with the sql query, echo error to indicate that
+						else
+							echo"error";
+					}
+					echo "</div>";
+				}
+			}
+			?>
+			
+			<!--Main section of the page-->
 			<div id="loginContent">
 			
 				<h2>Sign In</h2>
-				<p>Signing into your account allows you to buy merchendise and leave product reviews</p>
+				<p>Signing into your account allows you to buy merchendise and leave product reviews.</p>
 				
-				<form id="loginForm" action="login.php?action=login" method="POST">
+				<!--Form used to log in-->
+				<form class="appForm" id="loginForm" action="login.php?action=login" method="POST" onsubmit="return validateLogIn()">
 				
 					<p><label for="email">E-mail Adress: </label><input type="email" id="email" name="email" required></p>
 					<p><label for="password">Password: </label><input type="password" id="password" name="password" required></p>
 					
-					<p><button type="submit">Log-in</button></p>
+					<p><button class="appButton" type="submit">Sign-in</button></p>
 					
-					<span id="logInErrorMessage">
+					<span id="loginErrorMessage">
 					<?php
+						//Execute only for form submission
 						if($_SERVER["REQUEST_METHOD"]==="POST"){
+							//Display login error if one has occurred.
 							if($error!==""){
 								echo "<p>".$error."</p>";
 							}
@@ -184,26 +232,30 @@
 					</span>
 					
 				</form>
-				
+			
 				<h2>Sign Up</h2>
-				<p>Not registered? Create a student shop account using the following form</p>
+				<p>Not registered? Create a student shop account using the following form.</p>
 				
-				<form id="registerForm" action="login.php?action=register" method="POST">
+				<!--Form used to registration -->
+				<form class="appForm" id="registerForm" action="login.php?action=register" method="POST" onsubmit="return validateRegistration()">
 				
-					<p><label for="name2">Full Name:</label><input type="text" id="name2" name="name2"></p>
-					<p><label for="email2">E-mail Adress:</label><input type="email" id="email2" name="email2"></p>
+					<p><label for="name2">Name:</label><input type="text" id="name2" name="name2" required></p>
+					<p><label for="email2">E-mail Adress:</label><input type="email" id="email2" name="email2" required></p>
 					<p>Your password should contain at least 8 characters, one uppercase letter, one number and one lowercase letter</p>
-					<p><label for="password2">Password:</label><input type="password" id="password2" name="password2"></p>
-					<p><label for="confirmPassword">Confirm Password:</label><input type="password" id="confirmPassword" name="confirmPassword"></p>
-					<p><label for="homeAddress">Home Address:</label><input type="text" id="homeAddress" name="homeAddress"></p>
-					
-					<p><button type="submit">Create Account</button></p>
-				
+					<p><label for="password2">Password:</label><input type="password" id="password2" name="password2" required></p>
+					<p><label for="confirmPassword">Confirm Password:</label><input type="password" id="confirmPassword" name="confirmPassword" required></p>
+					<p><label for="homeAddress">Home Address:</label><input type="text" id="homeAddress" name="homeAddress" required></p>
+					<p><button class="appButton" type="submit">Create Account</button></p>
+					<!--Span element used to show client-side validation errors-->
+					<span id="registrationError"></span>
+
 				<form>
 				
 			</div>
 				
 		</main>
+		
+		<script src="ApplicationScript.js"></script>
 		
 		<footer>
 				

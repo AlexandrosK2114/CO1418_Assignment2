@@ -1,17 +1,4 @@
-<!--Connecting to database-->
-<?php
-	session_start();
-	$DATABASE=mysqli_connect("localhost","akyriakou6","XvWvBp7Jw7","akyriakou6");
-	
-	if(isset($_GET['logout'])){
-		if($_GET['logout']==='1'){
-			$_SESSION['logged-in']=false;
-			$_SESSION['username']='';
-			session_destroy();
-		}
-	}
-?>
-<!--This HTML document contains all the code used to create the homepage of the shop-->
+<?php include 'conn.php';?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,10 +27,14 @@
 					<a href="products.php">Products</a>
 					<a href="cart.php">Cart</a>
 					<?php 
+						//If the user is logged-in, a sign out link is displayed
 						if(isset($_SESSION['logged-in'])){
-							if(htmlspecialchars($_SESSION['logged-in'])===true)
+							if($_SESSION['logged-in']===true)
 								echo "<a href='index.php?logout=1'>Sign Out</a>";
+							else
+								echo"<a href='login.php'>Sign In</a>";
 						}
+						//Otherwise a link to the login page is displayed
 						else
 							echo"<a href='login.php'>Sign In</a>";
 					?>			
@@ -63,7 +54,7 @@
 				<a href="cart.php">Cart</a>
 				<?php 
 					if(isset($_SESSION['logged-in'])){
-						if(htmlspecialchars($_SESSION['logged-in'])===true)
+						if($_SESSION['logged-in']===true)
 							echo "<a href='index.php?logout=1'>Sign Out</a>";
 					}
 					else
@@ -80,9 +71,10 @@
 			<div id="indexMain">
 			
 				<?php
-					if(isset($_GET['logged-in'])){
+					//Presenting a welcoming message if the user is logged-in
+					if(isset($_SESSION['logged-in'])){
 						if($_SESSION["logged-in"]===true){
-							echo "<h2>Hello ".htmlentities($_SESSION['username'])."</h2>";
+							echo "<h2>Hello ".$_SESSION['username']."</h2>";
 						}
 					}
 				?>
@@ -92,21 +84,23 @@
 				<div id="offers">
 				
 				<?php
-				
+					//Presenting all the available offers from the database
 					$sqlQuery="SELECT * FROM tbl_offers";
 					
-					$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);
-					mysqli_stmt_execute($sqlResponse);
-					$result=mysqli_stmt_get_result($sqlResponse);
+					$sqlResponse=mysqli_prepare($DATABASE,$sqlQuery);//preparing the query
+					mysqli_stmt_execute($sqlResponse);//executing it
+					$result=mysqli_stmt_get_result($sqlResponse);//retrieving the result
 					
-					while($row=mysqli_fetch_array($result)){
+					while($row=mysqli_fetch_array($result)){//Retrieving each table row as an aerray
 						
+						//Displaying offer information using the fetched array
 						echo "<div class='offer'>";
 						echo "<h4>".htmlspecialchars($row['offer_title'])."</h4>";
 						echo "<p>".htmlspecialchars($row['offer_desc'])."</p>";
 						echo "</div>";
 					}
 					
+					//Closing the query
 					mysqli_stmt_close($sqlResponse);
 					
 				?>
@@ -120,11 +114,11 @@
 				
 				<h4>Together</h4>
 				
-				<p><iframe src="resources/video.mp4" class="indexVideo" title="University of Lancashire video"></iframe></p>
+				<iframe src="resources/video.mp4" class="indexVideo" title="University of Lancashire video"></iframe>
 				
 				<h4>Join Our Global Community</h4>
 				
-				<p><iframe title="vimeo-player" src="https://player.vimeo.com/video/1071072056?h=d4263dcc56" class="indexVideo" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"   allowfullscreen></iframe></p>
+				<iframe title="vimeo-player" src="https://player.vimeo.com/video/1071072056?h=d4263dcc56" class="indexVideo" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"   allowfullscreen></iframe>
 			</div>
 				
 		</main>
