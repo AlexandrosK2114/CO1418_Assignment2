@@ -213,10 +213,10 @@
 					<h2>Reviews</h2>
 					<form id='reviewForm'class="appForm "method="POST" action="item.php?itemID=<?=$itemID?>" onsubmit="return validateReview()">
 						<h2>Add a review</h2>
-						<p><label for="reviewScore">Score:</label><input type="number" id="reviewScore" name="reviewScore" min="0" max="5" required/></p>
+						<p><label for="reviewScore">Score:</label><input type="number" id="reviewScore" name="reviewScore" min="1" max="5" required/></p>
 						<p></label><input type="hidden" name="action" value='2'/></p>
-						<p><label for="reviewTitle">Title:</label><input type="text" id="reviewTitle" name="reviewTitle"/></p>
-						<p><label for="reviewDescription">Description:</label><input type="text" id="reviewDescription" name="reviewDescription"/></p>
+						<p><label for="reviewTitle">Title:</label><input type="text" id="reviewTitle" name="reviewTitle" required/></p>
+						<p><label for="reviewDescription">Description:</label><input type="text" id="reviewDescription" name="reviewDescription" required/></p>
 						<button class="appButton" type="submit">Submit your review</button>
 						<span id="errorMessage"></span>
 					</form>
